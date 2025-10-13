@@ -1,0 +1,158 @@
+{
+  "system_name": "daring",
+  "version": "1.0.0",
+  "configuration": {
+    "global_events": [
+      "setActive", "onActive", "setCuti", "onCuti", "setAlumni", "setDropout",
+      "setAvailable", "onAvailable", "setNotAvailable", "onNotAvailable",
+      "setOnTime", "setLate", "setInit", "setPengajuanTopik",
+      "setPemilihanPembimbing", "setPenyusunanProposal", "setPenyusunanLaporan",
+      "setSeminarHasil", "setSidang", "setLulus", "setExpired", "setCompleted",
+      "setResume", "onResume", "pause"
+    ]
+  },
+  "entities": [
+    {
+      "entity_type": "superclass",
+      "id": "111",
+      "name": "baseEntity",
+      "key_letter": "baseent",
+      "attributes": [
+        {
+          "name": "nim",
+          "data_type": "id",
+          "attribute_type": "naming"
+        },
+        {
+          "name": "status",
+          "data_type": "state",
+          "attribute_type": "descriptive"
+        }
+      ]
+    },
+    {
+      "entity_type": "class",
+      "id": "1",
+      "name": "mahasiswa",
+      "inherits_from": "111",
+      "key_letter": "mhs",
+      "storage_type": "dataStore",
+      "attributes": [
+        { "name": "nim", "data_type": "id", "attribute_type": "naming" },
+        { "name": "status", "data_type": "state", "attribute_type": "descriptive", "default_value": "active" },
+        { "name": "nama", "data_type": "string", "attribute_type": "descriptive" },
+        { "name": "semester", "data_type": "integer", "attribute_type": "descriptive" },
+        { "name": "ipk", "data_type": "real", "attribute_type": "descriptive" },
+        { "name": "ukt_id", "data_type": "id", "attribute_type": "referential" }
+      ],
+      "state_machine": {
+        "initial_state": "aktif",
+        "states": [
+          {
+            "name": "aktif",
+            "id": "1",
+            "on_entry_action": "// Implementation for entering aktif state"
+          },
+          {
+            "name": "cuti",
+            "id": "2",
+            "on_entry_action": "// Implementation for entering cuti state"
+          },
+          {
+            "name": "alumni",
+            "id": "3",
+            "on_entry_action": "// Implementation for entering alumni state"
+          },
+          {
+            "name": "dropout",
+            "id": "4",
+            "on_entry_action": "// Implementation for entering dropout state"
+          }
+        ],
+        "transitions": [
+          { "from_state": "aktif", "to_state": "aktif", "event": "onActive", "parameters": ["nim:id"] },
+          { "from_state": "aktif", "to_state": "cuti", "event": "setCuti", "parameters": ["nim:id"] },
+          { "from_state": "aktif", "to_state": "alumni", "event": "setAlumni", "parameters": ["nim:id"] },
+          { "from_state": "aktif", "to_state": "dropout", "event": "setDropout", "parameters": ["nim:id"] },
+          { "from_state": "cuti", "to_state": "aktif", "event": "setActive", "parameters": ["nim:id"] }
+        ]
+      }
+    },
+    {
+      "entity_type": "class",
+      "id": "2",
+      "name": "dosen",
+      "inherits_from": "111",
+      "key_letter": "dsn",
+      "storage_type": "dataStore",
+      "attributes": [
+        { "name": "nip", "data_type": "id", "attribute_type": "naming" },
+        { "name": "status", "data_type": "state", "attribute_type": "descriptive", "default_value": "active" },
+        { "name": "nama", "data_type": "string", "attribute_type": "descriptive" }
+      ],
+      "state_machine": {
+        "initial_state": "aktif",
+        "states": [
+          { "name": "aktif", "id": "5" },
+          { "name": "cuti", "id": "6" }
+        ],
+        "transitions": [
+          { "from_state": "aktif", "to_state": "cuti", "event": "setCuti", "parameters": ["nip:id"] },
+          { "from_state": "cuti", "to_state": "aktif", "event": "setActive", "parameters": ["nip:id"] }
+        ]
+      }
+    },
+    {
+      "entity_type": "class",
+      "id": "3",
+      "name": "mata_kuliah",
+      "key_letter": "mtk",
+      "attributes": [
+        { "name": "matkul_id", "data_type": "id", "attribute_type": "naming" },
+        { "name": "nama", "data_type": "string", "attribute_type": "descriptive" },
+        { "name": "curriculum", "data_type": "integer", "attribute_type": "descriptive" },
+        { "name": "required_semester", "data_type": "integer", "attribute_type": "descriptive" }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "relationship_id": "R1",
+      "type": "association",
+      "participants": [
+        { "entity_id": "1", "role_name": "takes", "multiplicity": "0..*" },
+        { "entity_id": "3", "role_name": "is taken by", "multiplicity": "0..*" }
+      ],
+      "association_class": {
+        "entity_type": "association_class",
+        "id": "4",
+        "name": "mahasiswa_matakuliah",
+        "key_letter": "mhs_mtk",
+        "attributes": [
+          { "name": "mhs_mtk_id", "data_type": "id", "attribute_type": "naming" },
+          { "name": "matkul_id", "data_type": "id", "attribute_type": "referential" },
+          { "name": "nim", "data_type": "id", "attribute_type": "referential" }
+        ]
+      }
+    },
+    {
+      "relationship_id": "R2",
+      "type": "association",
+      "participants": [
+        { "entity_id": "2", "role_name": "teaches", "multiplicity": "0..*" },
+        { "entity_id": "3", "role_name": "is taught by", "multiplicity": "1..*" }
+      ],
+      "association_class": {
+        "entity_type": "association_class",
+        "id": "5",
+        "name": "dosen_matakuliah",
+        "key_letter": "dsn_mtk",
+        "attributes": [
+          { "name": "dsn_mtk_id", "data_type": "id", "attribute_type": "naming" },
+          { "name": "matkul_id", "data_type": "id", "attribute_type": "referential" },
+          { "name": "nip", "data_type": "id", "attribute_type": "referential" }
+        ]
+      }
+    }
+  ]
+}
