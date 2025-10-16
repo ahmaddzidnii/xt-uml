@@ -1,0 +1,30 @@
+{
+  "classes": [
+    {
+      "name": "Task",
+      "attributes": [
+        {
+          "name": "id",
+          "type": "UUID"
+        },
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "dueDate",
+          "type": "date"
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "values": ["New", "InProgress", "Completed"]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "actionLanguage": {
+    "operations": [
+      {
+        "name": "completeTask",
+        "parameters": [
+          {
+            "name": "taskId",
+            "type": "UUID"
+          }
+        ],
+        "actions": [
+          {
+            "type": "update",
+            "target": "this",
+            "attribute": "state",
+            "value": "Completed"
+          },
+          {
+            "type": "log",
+            "message": "Task with ID ${taskId} has been completed."
+          }
+        ]
+      },
+      {
+        "name": "createTask",
+        "parameters": [
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          }
+        ],
+        "actions": [
+          {
+            "type": "create",
+            "class": "Task",
+            "attributes": {
+              "id": {
+                "operation": "generate_uuid"
+              },
+              "title": {
+                "operation": "get_param",
+                "param": "title"
+              },
+              "description": {
+                "operation": "get_param",
+                "param": "description"
+              },
+              "state": "New"
+            }
+          },
+          {
+            "type": "log",
+            "message": "New task 'title' created."
+          }
+        ]
+      }
+    ]
+  }
+}

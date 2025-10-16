@@ -1,0 +1,1 @@
+hanya hasil prompt acak yang belum terverifikasi kebenarannya

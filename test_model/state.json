@@ -1,0 +1,51 @@
+{
+  "stateMachine": {
+    "forClass": "Task",
+    "initialState": "New",
+    "states": [
+      {
+        "name": "New",
+        "entryAction": {
+          "type": "log",
+          "message": "Task created."
+        }
+      },
+      {
+        "name": "InProgress",
+        "entryAction": {
+          "type": "log",
+          "message": "Task started."
+        }
+      },
+      {
+        "name": "Completed",
+        "entryAction": {
+          "type": "log",
+          "message": "Task finished."
+        }
+      }
+    ],
+    "transitions": [
+      {
+        "fromState": "New",
+        "toState": "InProgress",
+        "onEvent": "startTask"
+      },
+      {
+        "fromState": "InProgress",
+        "toState": "Completed",
+        "onEvent": "completeTask"
+      },
+      {
+        "fromState": "New",
+        "toState": "Completed",
+        "onEvent": "completeTask"
+      },
+      {
+        "fromState": "Completed",
+        "toState": "New",
+        "onEvent": "reopenTask"
+      }
+    ]
+  }
+}
