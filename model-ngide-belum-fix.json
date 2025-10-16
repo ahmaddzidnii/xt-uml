@@ -1,0 +1,125 @@
+{
+  "system_name": "SistemAkademik",
+  "version": "1.0.0",
+  "domains": [
+    {
+      "name": "Manajemen Mahasiswa",
+      "key_letter": "MM",
+      "classes": [
+        {
+          "entity_type": "class",
+          "name": "Mahasiswa",
+          "key_letter": "MHS",
+          "description": "Merepresentasikan seorang mahasiswa yang terdaftar.",
+          "attributes": [
+            { "name": "NIM", "data_type": "string", "attribute_type": "naming" },
+            { "name": "Nama", "data_type": "string", "attribute_type": "descriptive" },
+            { "name": "Status", "data_type": "state", "attribute_type": "descriptive", "default_value": "Aktif" }
+          ],
+          "state_machine": {
+            "initial_state": "Aktif",
+            "states": [
+              {
+                "name": "Aktif",
+                "on_entry_action": [
+                  {
+                    "type": "log",
+                    "message": "Mahasiswa dengan NIM ${self.NIM} sekarang aktif."
+                  }
+                ]
+              },
+              {
+                "name": "Cuti",
+                 "on_entry_action": [
+                  {
+                    "type": "log",
+                    "message": "Mahasiswa dengan NIM ${self.NIM} mengambil cuti."
+                  }
+                ]
+              },
+              {
+                "name": "Lulus"
+              }
+            ],
+            "transitions": [
+              {
+                "from_state": "Aktif",
+                "to_state": "Cuti",
+                "event": "ambilCuti",
+                "condition": "self.IPK > 2.5",
+                "actions": [
+                  {
+                    "type": "update",
+                    "target": "self",
+                    "attribute": "Status",
+                    "value": "'Cuti'"
+                  },
+                  {
+                    "type": "call_external_function",
+                    "function_name": "NotifikasiKeuangan",
+                    "parameters": ["self.NIM", "'status_cuti'"]
+                  }
+                ]
+              },
+              {
+                "from_state": "Cuti",
+                "to_state": "Aktif",
+                "event": "aktifkanKembali",
+                "actions": [
+                   {
+                    "type": "update",
+                    "target": "self",
+                    "attribute": "Status",
+                    "value": "'Aktif'"
+                  }
+                ]
+              },
+              {
+                "from_state": "Aktif",
+                "to_state": "Lulus",
+                "event": "dinyatakanLulus",
+                "actions": [
+                  {
+                    "type": "update",
+                    "target": "self",
+                    "attribute": "Status",
+                    "value": "'Lulus'"
+                  },
+                  {
+                    "type": "create",
+                    "class": "Transkrip",
+                    "attributes": {
+                      "NIM": "self.NIM",
+                      "TanggalLulus": "current_date()"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "entity_type": "passive_class",
+          "name": "MataKuliah",
+          "key_letter": "MK",
+          "description": "Kelas pasif yang tidak memiliki state machine.",
+          "attributes": [
+             { "name": "KodeMK", "data_type": "string", "attribute_type": "naming" },
+             { "name": "NamaMK", "data_type": "string", "attribute_type": "descriptive" }
+          ]
+        }
+      ],
+      "relationships": [
+        {
+          "relationship_id": "R1",
+          "description": "Mahasiswa mengambil Mata Kuliah",
+          "participants": [
+            { "class_name": "Mahasiswa", "role": "mengambil", "multiplicity": "1..*" },
+            { "class_name": "MataKuliah", "role": "diambil oleh", "multiplicity": "0..*" }
+          ],
+          "association_class": "KRS"
+        }
+      ]
+    }
+  ]
+}
